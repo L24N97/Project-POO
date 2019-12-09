@@ -1,19 +1,28 @@
 import random
 
-class Carta(object):
+class Carta:
     def __init__(self, nombre, valor, traje): 
         self.nombre = nombre
         self.valor = valor 
         self.traje = traje
         self.m_carta = False # Muestra las cartas 
 
-    def __repr__(self): # Metodo OOP; retorna el objeto Carta.
+    def __repr__(self): 
+        # Retorna (muestra) el objeto Carta.
         if self.m_carta:
             return f"{self.nombre} de {self.traje}"
         else:
             return 'CARTA'
 
-class MazoCarta:
+class Mazo:
+    def barajar(self, times=1):
+        random.shuffle(self.cartas)
+        print("Tarjetas Barajadas!")
+
+    def dealer(self):
+        return self.cartas.pop(0)
+
+class MazoCarta(Mazo):
     def __init__(self):
         self.cartas = [] # Lista vacia, para anexar. 
         trajes = ['Diamantes', 'Corazones', 'Espadas', 'Treboles']
@@ -26,14 +35,24 @@ class MazoCarta:
                 self.cartas.append(Carta(nombre, valores[nombre], traje))
 
     def __repr__(self):
-        return "El mazo de cartas contiene: {0} Cartas.".format(len(self.cartas))
+        return "El mazo de tarjetas contiene: {0} Cartas.".format(len(self.cartas))
 
-    def barajar(self, times=1):
-        random.shuffle(self.cartas)
-        print("Cartas Barajadas!")
+class Jugador:
+    def __init__(self):
+        self.cartas = []
 
-    def dealer(self):
-        return self.cartas.pop(0)
+    def contarCartas(self):
+        return len( self.cartas )
+
+class Puntaje:
+    # Puntaje de juego
+    def __init__(self, cartas):
+        if not len(cartas) == 5:
+            return 'ERROR: Recuento de tarjetas es incorrecto'
+        self.cartas = cartas
+
+
+
 
 
 # deck = MazoCarta()
