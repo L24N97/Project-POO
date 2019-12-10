@@ -50,12 +50,52 @@ class Puntaje:
         if not len(cartas) == 5:
             return 'ERROR: Recuento de tarjetas es incorrecto'
         self.cartas = cartas
+    
+    def manos(self):
+        cartas = [carta.traje for carta in self.cartas]
+        if len( set(trajes) ) == 1:
+            return True
+        else:
+            return False
+
+    def ordenManos(self):
+        valores = [carta.valor for carta in self.cartas]
+        valores.sort()
+
+        if not len( set(valores) ) == 5: 
+            return False
+
+        if valor[4] == 14 and valores[3] == 5 and valor[2] == 4 and valor[1] == 3 and valor[0] == 2:
+            return True
+        else:
+            if not valor[0] + 1 == valor[1]: 
+                return False
+            if not valor[1] + 1 == valor[2]: 
+                return False
+            if not valor[2] + 1 == valor[3]: 
+                return False
+            if not valor[3] + 1 == valor[4]: 
+                return False
+
+        return True
+
+    def cartaAlta(self):
+        valores = [carta.valor for carta in self.cartas]
+        cartaAlta = None
+        for carta in self.cartas:
+            if cartaAlta is None:
+                cartaAlta = carta
+            elif cartaAlta.valor < carta.valor:
+                cartaAlta = carta
+        return cartaAlta
 
 
 
 
 
 # deck = MazoCarta()
+############ Probando MazoCartas ##########
+
 # rand = deck.dealer()
 # rand.m_carta = True 
 # print(rand)
@@ -63,3 +103,16 @@ class Puntaje:
 # ranD = deck.dealer()
 # ranD.m_carta = True
 # print(ranD)
+
+############# Probando Jugador ############
+
+# leo = Jugador()
+# deck.barajar()
+# leo.cartas.append(deck.dealer())
+# leo.cartas.append(deck.dealer())
+# leo.cartas.append(deck.dealer())
+# leo.cartas.append(deck.dealer())
+# leo.cartas.append(deck.dealer())
+# leo.cartas[0].m_carta=True
+# leo.cartas[1].m_carta=True
+# leo.cartas[2].m_carta=True
