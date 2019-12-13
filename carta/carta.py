@@ -1,47 +1,23 @@
 import random
 
 class Carta( object ):
-    def __init__(self, nombre, valor, traje, simbolo): 
-        self.nombre = nombre
+    def __init__(self, valor, traje): 
         self.valor = valor 
         self.traje = traje
-        self.simbolo = simbolo
-        self.m_carta = False # Muestra las cartas 
-
-    def __repr__(self): 
-        # Retorna (muestra) el objeto Carta.
-        if self.m_carta:
-            return self.simbolo
-        else:
-            return 'CARTA'
 
 class Mazo( object ):
+
+    def __init__(self):
+        self.valores = [x for x in range(2, 11)] + ['J', 'Q', 'k', 'Ace']
+        self.trajes = ['♣', '♠', '♡', '♢']
+        self.mazo_carta = [Carta(valor, traje) for traje in self.trajes for valor in self.valores]
+
     def barajar(self, times=1):
         random.shuffle(self.cartas)
         print("Tarjetas Barajadas!")
 
     def dealer(self):
         return self.cartas.pop(0)
-
-class MazoCarta(Mazo):
-    def __init__(self):
-        self.cartas = [] # Lista vacia, para anexar. 
-        trajes = {'Diamantes': '♢', 'Corazones': '♡', 'Espadas': '♠', 'Treboles': '♣'}
-        valores = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6,
-                    '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11,
-                    'Q': 12, 'K': 13, 'As': 14}
-
-        for nombre in valores:
-            for traje in trajes:
-                symbol = trajes[traje]
-                if valores[nombre] < 11:
-                    simbolo = str( valores[nombre] ) + symbol
-                else:
-                    simbolo = nombre[0] + symbol
-                self.cartas.append( Carta(nombre, valores[nombre], traje, simbolo) )
-
-    def __repr__(self):
-        return "El mazo de tarjetas contiene: {0} Cartas.".format(len(self.cartas))
 
 class Jugador( object ):
     def __init__(self):
@@ -58,6 +34,7 @@ class Puntaje( object ):
     def __init__(self, cartas):
         if not len(cartas) == 5:
             return 'ERROR: Recuento de tarjetas es incorrecto'
+            
         self.cartas = cartas
     
     def manos(self):
@@ -99,12 +76,12 @@ class Puntaje( object ):
         return cartaAlta
     
     def cuenta(self):
-        contador = 0
+        count = 0
         valores = [carta.valor for carta in self.cartas]
         for valor in valores:
-            if valores.contador(valor) > contador:
-                contador = valores.contador(valor)
-        return contador
+            if valores.count(valor) > count:
+                count = valores.count(valor)
+        return count
 
 
     def pares(self):
@@ -138,10 +115,140 @@ class Puntaje( object ):
 
         return False
 
-    
+def gamePoker():
+    # Funcion que invoca el juego
+
+    player = Jugador()
+
+    # Monto inicial 
+    puntos = 200
+
+    # costo por mano
+    costo_mano = 10
+
+    fin = False
+    while not fin:
+        print( 'Tienes {0} puntos'.format(puntos) )
+        print()
+
+        puntos -= 10
+
+        # Ciclo mano
+        deck = MazoCarta()
+        deck.barajar()
+
+        # Entrega de cartas
+        for i in range(5):
+            player.agregarCartas( deck.dealer() )
+
+        # Mostrar cartas
+        for carta in player.cartas:
+            carta.m_carta = True
+        print(player.cartas)
+
+        entradaValida = False
+        while not entradaValida:
+            print( '¿Qué cartas quieres descartar? (es decir: 1, 2, 3)' )
+            print( 'solo presiona enter para mantener todo, escribe "salir" para salir' )
+            entradaStr = input()
+
+            if entradaStr == 'salir':
+                fin = True
+                break
+
+            try:
+                listaEntrada = [int(inp.strip()) for inp in entradaStr.split(',') if inp]
+
+                for inp in listaEntrada:
+                    if inp > 6:
+                        continue
+                    if inp < 1:
+                        continue
+
+                for inp in listaEntrada:
+                    player.cartas[inp-1] = deck.dealer()
+                    player.cartas[inp-1].m_carta = True
+
+                entradaValida = True
+            except:
+                print( 'Error de entrada: use comas para separar las tarjetas que desea mantener' )
+
+        print(player.cartas)
+        # Score
+        score = Puntaje(player.cartas)
+        straight = score.ordenManos()
+        flush = score.manos()
+        highestCount = score.cuenta()
+        pares = score.pares()
+
+        # Royal flush
+        if straight and flush and straight == 14:
+            print('Royal Flush!!!')
+            print('+2000')
+            puntos += 2000
+
+        # Straight flush
+        elif straight and flush:
+            print("Straight Flush!")
+            print("+250")
+            puntos += 250
+
+        # 4 of a kind
+        elif score.cuatroTipo():
+            print("Four of a kind!")
+            print("+125")
+            puntos += 125
+
+        # Full House
+        elif score.casaLlena():
+            print("Full House!")
+            print("+40")
+            puntos += 40
+
+        # Flush
+        elif flush:
+            print("Flush!")
+            print("+25")
+            puntos += 25
+
+        # Straight
+        elif straight:
+            print("Straight!")
+            print("+20")
+            puntos += 20
+
+        # 3 of a kind
+        elif highestCount == 3:
+            print("Three of a Kind!")
+            print("+15")
+            puntos += 15
+
+        # 2 pair
+        elif len(pares) == 2:
+            print("Two Pairs!")
+            print("+10")
+            puntos += 10
+
+        # Jacks or better
+        elif pares and pares[0] > 10:
+            print ("Jacks or Better!")
+            print("+5")
+            puntos += 5
+
+        player.cards=[]
+
+        print()
+        print()
+        print()
+
+gamePoker()
+        
 
 
+""" 
+Cartas 
+Mazo de cartas
+Jugador
 
 
-
-# deck = MazoCarta()
+"""
