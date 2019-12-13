@@ -12,243 +12,103 @@ class Mazo( object ):
         self.trajes = ['♣', '♠', '♡', '♢']
         self.mazo_carta = [Carta(valor, traje) for traje in self.trajes for valor in self.valores]
 
+    # Barajador de tarjetas
     def barajar(self, times=1):
-        random.shuffle(self.cartas)
+        random.shuffle(self.mazo_carta)
         print("Tarjetas Barajadas!")
 
+    # Metodo DEAL 
     def dealer(self):
-        return self.cartas.pop(0)
+        return self.mazo_carta.pop(0)
 
-class Jugador( object ):
+class Poker:
     def __init__(self):
-        self.cartas = []
-
-    def contarCartas(self):
-        return len( self.cartas )
-
-    def agregarCartas(self, carta):
-        self.cartas.append(carta)
-
-class Puntaje( object ):
-    # Puntaje de juego
-    def __init__(self, cartas):
-        if not len(cartas) == 5:
-            return 'ERROR: Recuento de tarjetas es incorrecto'
-            
-        self.cartas = cartas
-    
-    def manos(self):
-        trajes = [carta.traje for carta in self.cartas]
-        if len( set(trajes) ) == 1:
-            return True
-        else:
-            return False
-
-    def ordenManos(self):
-        valores = [carta.valor for carta in self.cartas]
-        valores.sort()
-
-        if not len( set(valores) ) == 5: 
-            return False
-
-        if valores[4] == 14 and valores[0] == 2 and valores[1] == 3 and valores[2] == 4 and valores[3] == 5:
-            return True
-        else:
-            if not valores[0] + 1 == valores[1]: 
-                return False
-            if not valores[1] + 1 == valores[2]: 
-                return False
-            if not valores[2] + 1 == valores[3]: 
-                return False
-            if not valores[3] + 1 == valores[4]: 
-                return False
-
-        return valores[4]
-
-    def cartaAlta(self):
-        valores = [carta.valor for carta in self.cartas]
-        cartaAlta = None
-        for carta in self.cartas:
-            if cartaAlta is None:
-                cartaAlta = carta
-            elif cartaAlta.valor < carta.valor:
-                cartaAlta = carta
-        return cartaAlta
-    
-    def cuenta(self):
-        count = 0
-        valores = [carta.valor for carta in self.cartas]
-        for valor in valores:
-            if valores.count(valor) > count:
-                count = valores.count(valor)
-        return count
-
-
-    def pares(self):
-        pares = []
-        valores = [carta.valor for carta in self.cartas]
-        for valor in valores:
-            if valores.count(valor) == 2 and valor not in pares:
-                pares.append(valor)
-        return pares
-
-    def cuatroTipo(self):
-        # "Four of a King"; en caso de empate en cuatro cartas, la quinta carta (pateador) mas alta gana. 
-        valores = [carta.valor for carta in self.cartas]
-        for valor in valores:
-            if valores.count(valor) == 4:
-                return True
-    
-    def casaLlena(self):
-        # Full House
-        dos = False
-        tres = False
-
-        valores = [carta.valor for carta in self.cartas]
-        if valores.count(valores) == 2:
-            dos = True
-        elif valores.count(valores) == 3:
-            tres = True
         
-        if dos and tres:
-            return True
+        # Genera y baraja el mazo
+        self.deck = Mazo()
+        self.deck.barajar()
 
-        return False
+        # Primeras 3 cartas en la mesa
+        self.cartas_mesa = [self.deck.dealer() for _ in range(3)]
 
-def gamePoker():
-    # Funcion que invoca el juego
+        # Jugador recibe 2 cartas en la mano
+        self.jugador_mano = []
+        for _ in range(1,13):
+            if _ == 6 or _ == 12:
+                self.jugador_mano.append(self.deck.dealer())
+            else:
+                self.deck.dealer()
 
-    player = Jugador()
+        # Solo agrega 
+        self.cartas_mesa += [self.deck.dealer() for _ in range(2)]
 
-    # Monto inicial 
-    puntos = 200
+    def mostrar_cartas_mesa(self):
+        self.banner = '|' + 'Cartas Comunitarias'.center(30) + '|'
+        print('-' * len(self.banner))
+        print(self.banner)
+        print('-' * len(self.banner))
 
-    # costo por mano
-    costo_mano = 10
+        for card in self.cartas_mesa:
+            print('|' + f'{card.valor} de {card.traje}'.center(30) + '|')
+        print('-' * len(self.banner) + '\n')
 
-    fin = False
-    while not fin:
-        print( 'Tienes {0} puntos'.format(puntos) )
-        print()
+    def por_mano(self):
 
-        puntos -= 10
+        banner_mano = '|' + 'Cartas en mano'.center(30) + '|'
+        print('-' *len(banner_mano))
+        print(banner_mano)
+        print('-' * len(banner_mano))
 
-        # Ciclo mano
-        deck = MazoCarta()
-        deck.barajar()
+        for card in self.jugador_mano:
+            print('|' + f'{card.valor} de {self.traje}'.center(30) + '|')
+        print('-' * len(banner_mano) + '\n')
 
-        # Entrega de cartas
-        for i in range(5):
-            player.agregarCartas( deck.dealer() )
+    def analisis_mano(self):
 
-        # Mostrar cartas
-        for carta in player.cartas:
-            carta.m_carta = True
-        print(player.cartas)
+        self.mostrar_cartas_mesa()
+        self.por_mano()
 
-        entradaValida = False
-        while not entradaValida:
-            print( '¿Qué cartas quieres descartar? (es decir: 1, 2, 3)' )
-            print( 'solo presiona enter para mantener todo, escribe "salir" para salir' )
-            entradaStr = input()
+        banner = '|' + 'Analisis'.center(30) + '|'
+        print('-' * len(banner))
+        print(banner)
+        print('-' * len(banner))
 
-            if entradaStr == 'salir':
-                fin = True
-                break
 
-            try:
-                listaEntrada = [int(inp.strip()) for inp in entradaStr.split(',') if inp]
+        pool = self.cartas_mesa + self.jugador_mano
 
-                for inp in listaEntrada:
-                    if inp > 6:
-                        continue
-                    if inp < 1:
-                        continue
+        valor_carta = [carta.valor for carta in pool]
 
-                for inp in listaEntrada:
-                    player.cartas[inp-1] = deck.dealer()
-                    player.cartas[inp-1].m_carta = True
 
-                entradaValida = True
-            except:
-                print( 'Error de entrada: use comas para separar las tarjetas que desea mantener' )
+        for valor in set(valor_carta):
+            if valor_carta.count(valor) == 4:
+                mano = [carta for carta in pool if carta.valor == valor]
+                print('|' + f'[4K] Four of a kind: [{valor}]'.center(30) + '|')
 
-        print(player.cartas)
-        # Score
-        score = Puntaje(player.cartas)
-        straight = score.ordenManos()
-        flush = score.manos()
-        highestCount = score.cuenta()
-        pares = score.pares()
+            if valor_carta.count(valor) == 3:
+                mano = [carta for carta in pool if carta.valor == valor]
+                print('|' + f'[3K] Three of a kind: [{valor}]'.center(30) + '|')
 
-        # Royal flush
-        if straight and flush and straight == 14:
-            print('Royal Flush!!!')
-            print('+2000')
-            puntos += 2000
+            if valor_carta.count(valor) == 2:
+                mano = [carta for carta in pool if carta.valor == valor]
+                print('|' + f'[P] Par: [{valor}]'.center(30) + '|')
 
-        # Straight flush
-        elif straight and flush:
-            print("Straight Flush!")
-            print("+250")
-            puntos += 250
 
-        # 4 of a kind
-        elif score.cuatroTipo():
-            print("Four of a kind!")
-            print("+125")
-            puntos += 125
+    
+        # Base trajes
+        cartas_trajes = [carta.traje for carta in pool]
+        for traje in set(cartas_trajes):
+            if cartas_trajes.count(traje) >= 5:
+                print(f'[F] flush: {traje}')
 
-        # Full House
-        elif score.casaLlena():
-            print("Full House!")
-            print("+40")
-            puntos += 40
+    
+    # Closing
+    # print('-' * len(banner))
 
-        # Flush
-        elif flush:
-            print("Flush!")
-            print("+25")
-            puntos += 25
 
-        # Straight
-        elif straight:
-            print("Straight!")
-            print("+20")
-            puntos += 20
+p = Poker()
+p.analisis_mano()
 
-        # 3 of a kind
-        elif highestCount == 3:
-            print("Three of a Kind!")
-            print("+15")
-            puntos += 15
 
-        # 2 pair
-        elif len(pares) == 2:
-            print("Two Pairs!")
-            print("+10")
-            puntos += 10
 
-        # Jacks or better
-        elif pares and pares[0] > 10:
-            print ("Jacks or Better!")
-            print("+5")
-            puntos += 5
-
-        player.cards=[]
-
-        print()
-        print()
-        print()
-
-gamePoker()
         
 
-
-""" 
-Cartas 
-Mazo de cartas
-Jugador
-
-
-"""
