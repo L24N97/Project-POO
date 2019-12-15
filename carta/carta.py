@@ -64,23 +64,54 @@ class Juego( object ):
             print('|' + f'{card.valor} de {card.traje}'.center(30) + '|')
         print('-' * len(banner))
 
-    def oponente(self):
-        banner = '|' + 'CARTAS OPONENTE'.center(30) + '|'
+    def analisis(self):
+        
+        self.mostrar_cartas_mesa()
+        self.jugador()
+        
+        banner = '|' + 'ANALISIS'.center(30) + '|' 
         print('-' * len(banner))
         print(banner)
         print('-' * len(banner))
 
-        # Muestra las cartas del oponente
-        for card in self.mano_jugador:
-            print('|' + f'{card.valor} de {card.traje}'.center(30) + '|')
+        # Evaluar
+        carta_pool = self.cartas_en_mesa + self.mano_jugador
+
+        # valores/pares
+        valor_carta = [carta.valor for carta in carta_pool]
+
+        # par
+        for value in set(valor_carta):
+            if valor_carta.count(value) == 4:
+                mano = [carta for carta in carta_pool if carta.valor == value]
+                print('|' + f'[4] Dos pares: [{value}]'.center(30) + '|')
+
+            if valor_carta.count(value) == 3:
+                mano = [carta for carta in carta_pool if carta.valor == value]
+                print('|' + f'[3] Tres de un tipo: [{value}]'.center(30) + '|')
+
+            if valor_carta.count(value) == 2:
+                mano = [carta for carta in carta_pool if carta.valor == value]
+                print('|' + f'[P] Un Par: [{value}]'.center(30) + '|')
+
+        # base 
+        carta_traje = [carta.traje for carta in carta_pool]
+        for suit in set(carta_traje):
+            if carta_traje.count(suit) >= 5:
+                print(f'[F] flush: {suit}')
+
+        # cierre
         print('-' * len(banner))
-          
-# 
+
+p = Juego()
+p.analisis()
+
+
 # m = Mazo()
 # m.barajar()
 # rand = m.dealer()
 # cartas = [m.dealer() for i in range(3)]
-# print(cartas)
+# # print(cartas)
 
 
 # jugador = []
@@ -90,9 +121,7 @@ class Juego( object ):
 #     else:
 #         rand
 
-# cartas += [m.dealer() for i in range(2)]
-
-# print(jugador)
+# # print(jugador)
 
 # banner = '|' + 'CARTAS EN MESA'.center(30) + '|'
 # print('-' * len(banner))
@@ -104,7 +133,6 @@ class Juego( object ):
 # print('-' * len(banner) + '\n')
 
 
-
 # baner = '|' + 'CARTAS EN MANO'.center(30) + '|'
 # print('-' * len(baner))
 # print(baner)
@@ -113,3 +141,54 @@ class Juego( object ):
 # for card in jugador:
 #     print('|' + f'{card.valor} de {card.traje}'.center(30) + '|')
 # print('-' * len(baner))
+
+# #############
+
+# # baner = '|' + 'CARTAS OPONENTE'.center(30) + '|'
+# # print('-' * len(baner))
+# # print(baner)
+# # print('-' * len(baner))
+
+# # for card in jugador:
+# #     print('|' + f'{card.valor} de {card.traje}'.center(30) + '|')
+# # print('-' * len(baner))
+
+# j = Juego()
+# j.mostrar_cartas_mesa()
+# j.jugador()
+
+# bannner = '|' + 'ANALISIS'.center(30) + '|' 
+# print('-' * len(bannner))
+# print(bannner)
+# print('-' * len(bannner))
+
+# # Evaluar
+# carta_pool = j.cartas_en_mesa + j.mano_jugador
+# # print(carta_pool)
+
+# # valores/pares
+# valor_carta = [carta.valor for carta in carta_pool]
+# print(f"Los valores son: {valor_carta}")
+
+# # par
+# for value in set(valor_carta):
+#     if valor_carta.count(value) == 4:
+#         mano = [carta for carta in carta_pool if carta.valor == value]
+#         print('|' + f'[4] Four of a kind: [{value}]'.center(30) + '|')
+
+#     if valor_carta.count(value) == 3:
+#         mano = [carta for carta in carta_pool if carta.valor == value]
+#         print('|' + f'[3] Three of a kind: [{value}]'.center(30) + '|')
+
+#     if valor_carta.count(value) == 2:
+#         mano = [carta for carta in carta_pool if carta.valor == value]
+#         print('|' + f'[P] Par: [{value}]'.center(30) + '|')
+
+# # base 
+# carta_traje = [carta.traje for carta in carta_pool]
+# for suit in set(carta_traje):
+#     if carta_traje.count(suit) >= 5:
+#         print(f'[F] flush: {suit}')
+
+# # cierre
+# print('-' * len(bannner))
